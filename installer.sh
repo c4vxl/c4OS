@@ -13,10 +13,11 @@ WIFI_PW=""
 DESKTOP_ENV="gnome"
 NO_TOUR=false
 NO_THEME_SWITCHER=false
-PACKAGES="base linux linux-firmware nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget"
+PACKAGES="base linux linux-firmware nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip"
 FB_SCRIPTS=""
 SOFTWARE=""
 NO_OSFLASH=false
+KEEP_STARTUP_SCRIPTS=false
 
 for ARG in "$@"; do
   case $ARG in
@@ -75,6 +76,9 @@ for ARG in "$@"; do
     --no-osflash)
       NO_OSFLASH=true
       ;;
+    --keep-fbs)
+      KEEP_STARTUP_SCRIPTS=true
+      ;;
     *)
 
       echo ">>> Subcommand overview:"
@@ -86,7 +90,7 @@ for ARG in "$@"; do
       echo "  | --hostname=<hostname>                 ; The hostname of the new system. (Default: c4OS)"
       echo "  | --password=<password>                 ; The password for the admin/owner 's account. (Leave empty to disable password)"
       echo "  | --theme=<theme>                       ; The Theme to install (eg. c4dots/gnome_white_mar_25)."
-      echo "  | --swap=<swap_size>                    ; Size of the swap file. (Default: 2G)"
+      echo "  | --swap=<swap_size>                    ; Size of the swap file. (Default: 2G); Set to 'n' to disable swap."
       echo "  | --wifi=<wifi_network>                 ; SSID of the WIFI-Network to connect the new os to."
       echo "  | --wifi-pw=<wifi_password>             ; Password of the WIFI-Network (if needed)."
       echo "  | --desktop-env=<desktop_environment>   ; The desktop environment to use (Options: gnome, none; Default: gnome)."
@@ -97,6 +101,7 @@ for ARG in "$@"; do
       echo "  | --no-tour                             ; Don't show a tour at the first startup of the os."
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
       echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
+      echo "  | --keep-fbs                            ; If specified, first login scripts will be kept (for debugging)."
       exit
       ;;
   esac
@@ -246,12 +251,14 @@ function load_base() {
     yes \"$PASSWORD\" | passwd $USERNAME
     "
 
-    echo "  | Generating swap."
-    sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
-    sudo fallocate -l $SWAP_SIZE $INSTALLATION_RUNTIME/swapfile
-    sudo chmod 600 $INSTALLATION_RUNTIME/swapfile
-    sudo mkswap $INSTALLATION_RUNTIME/swapfile
-    echo '/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
+    if [[ "$SWAP_SIZE" != "n" ]]; then
+      echo "  | Generating swap."
+      sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
+      sudo fallocate -l $SWAP_SIZE $INSTALLATION_RUNTIME/swapfile
+      sudo chmod 600 $INSTALLATION_RUNTIME/swapfile
+      sudo mkswap $INSTALLATION_RUNTIME/swapfile
+      echo '/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
+    fi
 
     echo "  | Creating Desktop."
     execute_as_user "mkdir Desktop"
@@ -321,7 +328,7 @@ function prepare_tour() {
         sudo cp programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
 
         echo "  | Installing required packages."
-        execute_as_root "sudo pacman -S python-pip --noconfirm && pip install PyGObject pywebview flask --break-system-packages"
+        execute_as_root "pip install PyGObject pywebview flask --break-system-packages"
 
         echo "  | Preparing wrapper."
         execute_as_root "
@@ -388,4 +395,4 @@ fi
 
 # Enable the first-login-services
 touch "$INSTALLATION_RUNTIME/home/$USERNAME/.is_first_login"
-execute_on_first_login "rm .is_first_login && echo \"\" > .profile"
+execute_on_first_login "rm .is_first_login && [[ \"$KEEP_STARTUP_SCRIPTS\" == \"false\" ]] && yes | rm -R .cache/.first_login_installer"
