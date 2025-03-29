@@ -116,7 +116,7 @@ def run_command(cmd):
             sys.stdout.flush()
             time.sleep(0.05) # prevents the frontend from hanging up if console updates too fast
         
-        yield "==done==\n\n"
+        yield "data: ==done==\n\n"
         sys.stdout.flush()
         
     return flask.Response(generate(), content_type="text/event-stream", headers={"Connection": "keep-alive"})
