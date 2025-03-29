@@ -16,6 +16,7 @@ NO_THEME_SWITCHER=false
 PACKAGES="base linux linux-firmware nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget"
 FB_SCRIPTS=""
 SOFTWARE=""
+NO_OSFLASH=false
 
 for ARG in "$@"; do
   case $ARG in
@@ -71,6 +72,9 @@ for ARG in "$@"; do
     --no-theme-switcher)
       NO_THEME_SWITCHER=true
       ;;
+    --no-osflash)
+      NO_OSFLASH=true
+      ;;
     *)
 
       echo ">>> Subcommand overview:"
@@ -92,6 +96,7 @@ for ARG in "$@"; do
       echo "  | --software=<software>                 ; Add preinstalled software (May be passed multiple times). (Seperate by comma)"
       echo "  | --no-tour                             ; Don't show a tour at the first startup of the os."
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
+      echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
       exit
       ;;
   esac
@@ -352,6 +357,18 @@ function prepare_software() {
     done
 }
 
+function install_osflash() {
+    if [[ "$NO_OSFLASH" == "false" ]]; then
+        execute_as_root "
+        git clone https://github.com/c4vxl/OSFlash
+        cd OSFlash
+        sh ./setup.sh
+        cd ..
+        sudo rm -R OSFlash
+        "
+    fi
+}
+
 prepare_partitions
 prepare_env
 load_base
@@ -360,6 +377,7 @@ setup_desktop_env
 prepare_tour
 setup_theme
 prepare_software
+install_osflash
 setup_theme_switcher
 
 if [[ "$FB_SCRIPTS" != "" ]]; then
