@@ -248,14 +248,10 @@ function load_base() {
 
     echo "  | Generating swap."
     sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
-    execute_as_root "
-    fallocate -l $SWAP_SIZE /swapfile
-    sudo swapoff -a
-    chmod 600 /swapfile
-    mkswap /swapfile
-    swapon /swapfile
-    echo \"/swapfile none swap sw 0 0\" >> /etc/fstab
-    "
+    sudo fallocate -l $SWAP_SIZE $INSTALLATION_RUNTIME/swapfile
+    sudo chmod 600 $INSTALLATION_RUNTIME/swapfile
+    sudo mkswap $INSTALLATION_RUNTIME/swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
 
     echo "  | Creating Desktop."
     execute_as_user "mkdir Desktop"
