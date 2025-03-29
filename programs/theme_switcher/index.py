@@ -105,7 +105,10 @@ if args.list:
     for theme in get_themes():
         print(f"https://github.com/{theme}")
 elif args.install:
-    install_theme_github(usr, args.install, False)
+    if args.install.__contains__("/"):
+        install_theme_github(args.install.split("/")[0], args.install.split("/")[1], False)
+    else:
+        install_theme_github(usr, args.install, False)
 else:
     threading.Thread(target=run_flask_server).start()
     start_desktop_app()

@@ -242,12 +242,14 @@ function load_base() {
     "
 
     echo "  | Generating swap."
+    sed -i 's/^/swapfile           	none      	swap      	defaults  	0 0$//' "$INSTALLATION_RUNTIME/etc/fstab"
     execute_as_root "
     fallocate -l $SWAP_SIZE /swapfile
+    sudo swapoff -a
     chmod 600 /swapfile
     mkswap /swapfile
     swapon /swapfile
-    echo \"/swapfile swap swap defaults 0 0\" >> /etc/fstab
+    echo \"/swapfile none swap sw 0 0\" >> /etc/fstab
     "
 
     echo "  | Creating Desktop."
@@ -293,10 +295,8 @@ function setup_desktop_env() {
 
 function setup_theme() {
     if [[ "$THEME" != "" ]]; then
-        echo ">>> Creating theme installation process."
-        echo "import subprocess" >> "$INSTALLATION_RUNTIME/home/$USERNAME/.setup_theme.py"
-        echo "subprocess.run(f\"yes $PASSWORD | bash <(curl -s https://raw.githubusercontent.com/$THEME/refs/heads/main/installer.sh)\", shell=True)" >> "$INSTALLATION_RUNTIME/home/$USERNAME/.setup_theme.py"
-        execute_on_first_login "python /home/$USERNAME/.setup_theme.py" # && rm /home/$USERNAME/.setup_theme.py"
+        echo ">>> Creating theme installation process..."
+        execute_on_first_login "dbus-launch \\\$(yes $PASSWORD | themes --install=$THEME)"
     fi
 }
 
@@ -315,7 +315,7 @@ function setup_theme_switcher() {
 
 function prepare_tour() {
     if [[ "$NO_TOUR" == "false" ]]; then
-        echo ">>> Preparing tour."
+        echo ">>> Preparing tour..."
         sudo mkdir "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
         sudo cp programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
 

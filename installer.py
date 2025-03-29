@@ -24,6 +24,7 @@ def get_previous_configs(): return json.load(open(get_configs_path(), "r")) if o
 
 def add_previous_config(config, name=datetime.datetime.now().strftime("%d - %B - %Y - %H:%M")):
     prev = get_previous_configs()
+    if list(prev.values()).__contains__(config): return
     prev[name] = config
     open(get_configs_path(), "w").write(json.dumps(prev))
 
