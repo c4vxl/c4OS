@@ -242,7 +242,7 @@ function load_base() {
     "
 
     echo "  | Generating swap."
-    sed -i 's/^/swapfile           	none      	swap      	defaults  	0 0$//' "$INSTALLATION_RUNTIME/etc/fstab"
+    sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
     execute_as_root "
     fallocate -l $SWAP_SIZE /swapfile
     sudo swapoff -a
@@ -296,7 +296,7 @@ function setup_desktop_env() {
 function setup_theme() {
     if [[ "$THEME" != "" ]]; then
         echo ">>> Creating theme installation process..."
-        execute_on_first_login "dbus-launch \\\$(yes $PASSWORD | themes --install=$THEME)"
+        execute_on_first_login "sleep 1 && dbus-launch \\\$(yes $PASSWORD | themes --install=$THEME)"
     fi
 }
 
