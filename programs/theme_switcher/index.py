@@ -45,7 +45,7 @@ def ask_for_permission(theme, window_width = 500, window_height = 300) -> bool:
     return result
 
 def install_theme_github(github_usr, repo, ask_for_perms = True):
-    cmd = f"bash <(curl -s https://raw.githubusercontent.com/{github_usr}/{repo}/refs/heads/main/installer.sh)"
+    cmd = f"bash -c 'curl -s https://raw.githubusercontent.com/{github_usr}/{repo}/refs/heads/main/installer.sh | bash'"
     if ask_for_perms:
         cmd = f"pkexec {cmd}"
     print(cmd)
