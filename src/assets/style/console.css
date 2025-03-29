@@ -1,0 +1,42 @@
+.console__output {
+    width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: 10px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+.console__output section {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+}
+.console__output section .title {
+    height: 4ch;
+    justify-content: space-between;
+    border-radius: unset;
+    position: sticky;
+    top: 0;
+}
+.console__output section .title p {
+    flex-grow: 1;
+    text-align: center;
+    color: white;
+}
+.console__output section .title span { color: white; }
+.console__output section.active .title span { transform: rotateZ(90deg); }
+.console__output section.active {
+    background: var(--accent);
+}
+.console__output section:not(.active) .content { display: none; }
+.console__output section .content {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: scroll;
+    white-space: nowrap;
+}

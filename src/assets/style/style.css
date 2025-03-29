@@ -1,0 +1,300 @@
+body {
+    --bg: #e6e0dc;
+    --text: #000000;
+    --text-accent: #ffffff;
+    --primary: rgb(62, 62, 94);
+    --accent: #bac3d4;
+    --highlight: rgb(218, 207, 183);
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    background: var(--bg);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+* {
+    box-sizing: border-box;
+    color: var(--text);
+    font-family: 'Courier New', Courier, monospace;
+    transition: .2s;
+    user-select: none;
+}
+
+.notification {
+    position: fixed;
+    width: 100%;
+    top: -100%;
+    left: 0;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    background-color: rgb(197, 103, 103);
+    color: white;
+    animation: notification__animation 5s;
+    z-index: 99999;
+}
+@keyframes notification__animation {
+    0% { top: -100%; }
+    10% { top: 0px; }
+    60% { top: 0px; }
+    100% { top: -100%; }
+}
+
+.primary, .input, .secondary {
+    text-align: center;
+    background: var(--primary);
+    border: none;
+    outline: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: white;
+    border-radius: 13px;
+    border: 2px solid var(--primary);
+}
+.input:hover { color: var(--text); }
+.secondary:not(:hover), .input {
+    background: transparent;
+    color: var(--text);
+}
+
+.input {
+    text-align: left;
+    padding-left: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-radius: 0;
+}
+
+.primary:hover, .input:hover, .primary.active { opacity: .86; }
+
+
+.info {
+    width: 20px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--primary);
+    border-radius: 300px;
+    position: relative;
+    cursor: pointer;
+}
+.info:not(.no__label)::after {
+    content: "i";
+    font-size: small;
+    position: absolute;
+    top: 3px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: max-content;
+    color: white;
+    height: max-content;
+}
+.info:hover .tooltip { opacity: 1; z-index: 999; }
+.info .tooltip {
+    position: absolute;
+    width: max-content;
+    background-color: rgb(46, 45, 45);
+    padding: 10px 15px;
+    border-radius: 30px 0px 30px 30px;
+    margin: auto;
+    text-align: center;
+    right: 110%;
+    top: 20px;
+    opacity: 0;
+    font-size: small;
+    color: white;
+    max-width: 50ch;
+}
+
+.dropdown {
+    position: relative;
+    width: 40ch;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0px;
+    overflow: hidden;
+}
+.dropdown .dropdown__content {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    max-height: 90ch;
+    overflow-y: scroll;
+    gap: 10px;
+}
+.dropdown:not(.active) .dropdown__content { display: none; }
+
+select:active, select:hover {
+    text-align: left;
+    color: white;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: .3;
+}
+
+#pages:scope .slide {
+    min-width: 100%;
+    height: 100%;
+}
+#pages .slide.active {
+    min-width: 100%;
+    height: 100%;
+}
+
+#themes__slider {
+    width: 50vw;
+    max-height: 73ch;
+    max-width: 90ch;
+}
+#themes__slider .slide h1 {
+    font-size: 140%;
+    margin: 0;
+    padding: 0;
+}
+#themes__slider .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+#themes__slider .slide:not(.active) { opacity: .4; }
+
+highlight {
+    background-color: rgb(218, 207, 183);
+    border-radius: 3px;
+    padding: 5px 10px;
+    border-radius: 13px;
+    white-space: wrap;
+}
+
+.apps__list, .apps__list .apps__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.apps__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    width: 90%;
+    height: 90%;
+    max-width: 150ch;
+    border: 1px solid var(--primary);
+    border-radius: 15px;
+    gap: 20px;
+}
+.apps__list .apps__item {
+    text-align: center;
+    border-radius: 10px;
+    width: 10ch;
+    height: 14ch;
+    border: 1px solid var(--primary);
+    cursor: pointer;
+}
+.apps__list .apps__item.active, .apps__list .apps__item:hover {
+    background: rgb(from var(--primary) r g b / 50%);
+    scale: 1.1;
+}
+.apps__list .apps__item img {
+    width: 50%;
+    height: auto;
+}
+.apps__list .apps__item p { margin: 0; height: max-content; color: var(--primary); }
+
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-thumb { background-color: var(--primary); }
+
+.overview {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left;
+    max-width: 90ch;
+}
+
+.overview li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    white-space: nowrap;
+}
+
+.row { display: flex; align-items: center; gap: 20px; }
+
+.modal, .modal .modal__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg);
+    display: none;
+}
+.modal.active { display: flex; z-index: 999; }
+
+input[type="checkbox"] {
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary);
+    display: inline-block;
+    border-radius: 12px;
+}
+input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -60%) rotate(45deg);
+    opacity: 0;
+}
+input[type="checkbox"]:checked {
+    background-color: var(--primary);
+}
+input[type="checkbox"]:checked::after {
+    opacity: 1;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--primary);
+    border-radius: 7px;
+    width: 40ch;
+    height: 10ch;
+    position: relative;
+    background: rgb(from var(--primary) r g b / 10%);
+    cursor: pointer;
+}
+.option.disabled { background-color: rgb(from var(--primary) r g b / 5%); cursor: unset; border: none; }
+.option.active { background: rgb(from var(--highlight) r g b / 50%); border: 1px solid transparent; }
+.option input { position: absolute; top: 5px; left: 5px; }
+.option p { margin: 0 auto; }

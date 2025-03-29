@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installer</title>
+    <link rel="stylesheet" href="assets/style/style.css">
+    <link rel="stylesheet" href="assets/style/table.css">
+    <link rel="stylesheet" href="assets/style/slider.css">
+    <link rel="stylesheet" href="assets/style/console.css">
+    <script src="assets/script/slider.js"></script>
+</head>
+<body>
+
+    <script>
+        let configuration = {};
+        let previousConfigs = {};
+
+        /**
+         * UI Components
+         */
+        const openModal = (inner) => document.body.innerHTML += `<div class="modal active" onclick="this.classList.remove('active')"><div class="modal__content">${inner}</div></div>`;
+        const createNotification = async (msg) => document.querySelector(".notifications").innerHTML += `<h1 class="notification">${msg}</h1>`;
+
+    </script>
+</body>
+</html>

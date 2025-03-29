@@ -1,0 +1,28 @@
+[org/gnome/settings-daemon/plugins/media-keys]
+calculator=['<Super>c']
+control-center=['<Super>i']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
+home=['<Super>e']
+screenreader=@as []
+terminal=['<Super>t']
+
+[org/gnome/settings-daemon/plugins/media-keys/control-center]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
+home='<Super>e'
+screenreader=@as []
+terminal='<Super>t'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Super>v'
+command='/usr/bin/diodon'
+name='diodon'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Alt><Super>s'
+command='shutdown now'
+name='shutdown'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2]
+binding='<Super>t'
+command='gnome-terminal -- zsh'
+name='terminal'

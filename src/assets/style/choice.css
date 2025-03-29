@@ -1,0 +1,16 @@
+.choice__box {
+    display: flex;
+    gap: 2px;
+    border-radius: 7px;
+    overflow: hidden;
+    height: 4ch;
+}
+.choice__box span {
+    background: var(--accent);
+    padding: 3px 10px;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.choice__box span.active { background: var(--primary); color: white; }

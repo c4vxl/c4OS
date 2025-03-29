@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+
+    <link rel="stylesheet" href="assets/style/style.css">
+
+    <link rel="stylesheet" href="assets/style/table.css">
+
+    <link rel="stylesheet" href="assets/style/slider.css">
+    <script src="assets/script/slider.js"></script>
+</head>
+<body>
+    <div class="slider" id="pages">
+        <div class="slide__container">
+            <div class="slide">
+                <p style="font-size: 200%; display: flex; align-items: center; gap: 20px;">Welcome, <highlight style="font-size: 60%;">owner</highlight></p>
+
+                <div class="slide__content">
+                    <p>This is your new installation of <highlight>c4OS</highlight>.</p>
+                    <p>Let's get you familiar with the controls, shall we?</p>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h1>Controls</h1>
+
+                <div class="slide__content">
+                    <ul style="display: flex; flex-direction: column; gap: 20px; text-align: left;">
+                        <li>Use <highlight>ctr + shift + A</highlight> to launch the runner menu.</li>
+                        <li>Use <highlight>ctr + alt + S</highlight> to shutdown your system.</li>
+                        <li>Use <highlight>ctr + alt + R</highlight> to reboot your system.</li>
+                        <li>Use <highlight>ctr + shift + T</highlight> to open the OS-Theme selector.</li>
+                        <li>Use <highlight>super + shift + S</highlight> to make a screenshot.</li>
+                        <li>Use <highlight>super + T</highlight> to launch the Terminal.</li>
+                        <li>Use <highlight>super + W</highlight> to launch the default Webbrowser.</li>
+                        <li>Use <highlight>super + I</highlight> to open the Settings.</li>
+                        <li>Use <highlight>super + V</highlight> to see your clipboard history.</li>
+                        <li>Use <highlight>super + S</highlight> to open the control panel.</li>
+                        <li>Use <highlight>super + A</highlight> to open the Desktop overview.</li>
+                        <li>Use <highlight>super + E</highlight> to open the home folder in the file explorer.</li>
+                        <li>Use <highlight>super + shift + arrow</highlight> to move a window to another Monitor.</li>
+                    </ul>
+
+                    <p><i>No worries. You'r gonna figure it out.</i></p>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="slide__content">
+                    <p>Your system is ready to use. <br> We will install your selected programs in the background.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide__indicator">
+            <div class="circle__container"></div>
+            <button class="next primary">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let configuration = {};
+
+        /**
+         * UI Components
+         */
+        const openModal = (inner) => document.body.innerHTML += `<div class="modal active" onclick="this.classList.remove('active')"><div class="modal__content">${inner}</div></div>`;
+        const createNotification = async (msg) => document.querySelector(".notifications").innerHTML += `<h1 class="notification">${msg}</h1>`;
+
+        /**
+         * Page handling
+         */
+        const pages = new Slider(document.querySelector("#pages"), [], true);
+        pages.nextBtn.addEventListener("click", (e) => {
+            pages.nextBtn.textContent = pages.current === pages.slides.length - 2 ? "Complete" : "Next";
+            
+            if (pages.current === pages.slides.length - 1) {
+                fetch("/end");
+                return;
+            }
+            
+            pages.display(pages.current + 1);
+        });
+    </script>
+</body>
+</html>

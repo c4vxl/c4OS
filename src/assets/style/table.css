@@ -1,0 +1,35 @@
+@import url("style.css");
+
+.table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    overflow-y: visible;
+    max-height: 60ch;
+}
+
+.table .row {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    padding: 10px;
+}
+.table .row:first-of-type { background: var(--primary); position: sticky; top: 0; z-index: 99; font-weight: 900; }
+.table .row:not(:first-of-type) {
+    background: rgb(from var(--primary) r g b / 50%);
+}
+.table .row:not(:first-of-type):hover { opacity: .8; }
+.table .row p {
+    flex-grow: 1;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0;
+    color: white;
+}

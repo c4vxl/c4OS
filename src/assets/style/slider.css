@@ -1,0 +1,49 @@
+@import url("style.css");
+
+.slider {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.slider .slide__container {
+    height: 100%;
+    display: flex;
+    gap: 5px;
+    justify-content: left;
+    align-items: center;
+}
+
+.slider .slide__container .slide {
+    text-align: center;
+    min-width: 50%;
+    height: 50%;
+    overflow: hidden;
+}
+
+.slider .slide__container .slide.active, .slider .slide__container .slide .slide__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 100%;
+    height: max-content;
+}
+.slider .slide__container .slide .slide__content { flex-grow: 1; min-width: unset; }
+
+.slider .slide__indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.slider .slide__indicator .circle__container .circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 300px;
+    display: inline-block;
+    border: 1px solid var(--primary);
+    position: relative;
+}
+.slider .slide__indicator .circle__container .circle.active { background: var(--primary); }
+.slider .slide__indicator .circle__container .circle:not(:first-of-type) { margin-left: 8px; }
