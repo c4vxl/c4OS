@@ -15,14 +15,11 @@ Categories=Development;IDE
 StartupWMClass=Code
 EOF
 
-sudo tee /usr/bin/code > /dev/null <<EOF
-#!/bin/bash
-/usr/bin/vscode/code "$@" >/dev/null 2>&1 &
-EOF
-
 sudo wget -O /usr/share/pixmaps/vscode.png https://code.visualstudio.com/assets/images/code-stable.png
 
 sudo wget -O vsc.tar.gz https://code.visualstudio.com/sha/download\?build\=stable\&os\=linux-x64
 sudo tar -xvzf vsc.tar.gz --strip-components=1
+
+sudo ln -s /usr/bin/vscode/bin/code /usr/bin/code
 
 cp /usr/share/applications/code.desktop ~/Desktop/code.desktop
