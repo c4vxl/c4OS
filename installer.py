@@ -9,6 +9,10 @@ import re
 import datetime
 import webview
 
+if subprocess.run('[[ "$EUID" -ne 0 ]] && echo "1"', shell=True, capture_output=True).stdout == "1":
+    print("Please run as root.")
+    exit(0)
+
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 def shutdown():
