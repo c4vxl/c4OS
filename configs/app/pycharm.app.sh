@@ -10,3 +10,5 @@ if [[ -d "$TOOLBOX_PATH" ]]; then
     sudo chmod 777 -R $TOOLBOX_PATH/apps/$NAME
     ln -s $TOOLBOX_PATH/apps/$NAME/bin/$SHORT $TOOLBOX_PATH/scripts/$SHORT
 fi
+
+cp /usr/share/applications/pycharm.desktop ~/Desktop/pycharm.desktop
