@@ -17,6 +17,7 @@ PACKAGES="base linux linux-firmware nano sudo networkmanager bluez-utils bluez c
 FB_SCRIPTS=""
 SOFTWARE=""
 NO_OSFLASH=false
+KEYMAP="us"
 KEEP_STARTUP_SCRIPTS=false
 
 for ARG in "$@"; do
@@ -70,6 +71,9 @@ for ARG in "$@"; do
       SOFTWARE+="${ARG#*=}"
       SOFTWARE="${SOFTWARE//[,;]/ }"
       ;;
+    --keymap=*)
+      KEYMAP+="${ARG#*=}"
+      ;;
     --no-theme-switcher)
       NO_THEME_SWITCHER=true
       ;;
@@ -98,6 +102,7 @@ for ARG in "$@"; do
       echo "  | --packages=<packages>                 ; Set the list of default packages to strap onto the installation at the beginning. (Don't touch!!!)"
       echo "  | --fbs=<shell_code>                    ; Add code to be run on first login into the system (May be passed multiple times)."
       echo "  | --software=<software>                 ; Add preinstalled software (May be passed multiple times). (Seperate by comma)"
+      echo "  | --keymap=<keymap>                     ; Set the keyboard layout. (Default: 'us')"
       echo "  | --no-tour                             ; Don't show a tour at the first startup of the os."
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
       echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
@@ -233,6 +238,9 @@ function load_base() {
     sed -i 's/^# %wheel ALL=(ALL:ALL) ALL$/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
     useradd -mG wheel $USERNAME
     "
+
+    echo "  | Loading keymap."
+    execute_as_root "setxkbmap $KEYMAP"
 
     echo "  | Installing yay."
     execute_as_root "

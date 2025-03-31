@@ -36,18 +36,24 @@
                     <div class="row">
                         <label for="setup__input__device__name">Device Name:</label>
                         <div class="info"><span class="tooltip">The name your device is going to be visible as in your network</span></div>
-                        <input id="setup__input__device__name" type="text" class="input" placeholder="Device name" onclick="this.select()" onchange="document.querySelector('#setup__input__bootloader__id').value = this.value;" value="c4OS">
+                        <input id="setup__input__device__name" style="width: 30ch;" type="text" class="input" placeholder="Device name" onclick="this.select()" onchange="document.querySelector('#setup__input__bootloader__id').value = this.value;" value="c4OS">
                     </div>
     
                     <div class="row">
                         <label for="setup__input__username">Your Name:</label>
-                        <input id="setup__input__username" type="text" class="input" placeholder="Username" value="owner" required>
+                        <input id="setup__input__username" style="width: 30ch;" type="text" class="input" placeholder="Username" value="owner" required>
                     </div>
     
                     <div class="row">
                         <label for="setup__input__password">Password:</label>
                         <div class="info"><span class="tooltip">Leave empty if no password should be used!</span></div>
-                        <input id="setup__input__password" type="password" class="input" placeholder="Password" onclick="this.select()">
+                        <input id="setup__input__password" style="width: 30ch;" type="password" class="input" placeholder="Password" onclick="this.select()">
+                    </div>
+
+                    <div class="row">
+                        <label for="setup__input__keyboard">Keyboard layout:</label>
+                        <select id="setup__input__keyboard" class="input" style="width: 30ch;">
+                        </select>
                     </div>
                 </div>
             </div>
@@ -206,6 +212,7 @@
                         <li>Device Name: <highlight id="overview__device__name"></highlight></li>
                         <li>Username: <highlight id="overview__username"></highlight></li>
                         <li>Use Password: <highlight id="overview__use__password"></highlight></li>
+                        <li>Keyboard layout: <highlight id="overview__keyboard"></highlight></li>
                         <li>Theme: <highlight id="overview__theme"></highlight></li>
         
                         <hr style="width: 100%;">
@@ -426,6 +433,7 @@
             set("bootloader__id", conf.bootloaderid);
             set("use__password", conf.password != "" ? "Yes" : "No");
             set("desktop__env", conf.desktopenv || "None");
+            set("keyboard", conf.keyboard || "us");
         }
 
         const collectConfiguration = () => {
@@ -442,6 +450,8 @@
             configuration.bootloaderid = get("setup__input__bootloader__id") || "None";
             configuration.theme = document.querySelector("#themes__slider .slide.active img").alt;
             configuration.desktopenv = document.querySelector("#setup__input__desktop_env span.active").innerHTML.toLowerCase();
+            configuration.keyboard = document.querySelector("#setup__input__keyboard").value
+
             displayConfiguration(document.querySelector("#overview"));
         }
 
@@ -478,9 +488,10 @@
             }
         });
 
-        // document.querySelector("#startup__modal").classList.remove('active');
-        // document.querySelector("#network__connection__modal").classList.remove('active');
-        // pages.display(3);
+        document.querySelector("#startup__modal").classList.remove('active');
+        document.querySelector("#network__connection__modal").classList.remove('active');
+        document.querySelector("#prev__configs__modal").classList.remove('active');
+        pages.display(1);
 
         /**
          * Theme chooser
@@ -744,6 +755,21 @@
         }
 
         loadPreviousConfigs();
+
+        /**
+         * Keyboard layouts
+         */
+         fetch("/keyboards")
+            .then(response => response.text())
+            .then(layouts => {
+                document.querySelector("#setup__input__keyboard").innerHTML += layouts.split("\n").map(x => `<option value="${x}">${x}</option>`);
+                document.querySelector("#setup__input__keyboard option[value='us']").setAttribute("selected", undefined);
+                configuration.keyboard = "us";
+            });
+        
+        document.querySelector("#setup__input__keyboard").addEventListener("change", (event) => {
+            fetch(`/loadKeyboard?k=${configuration.keyboard}`);
+        });
 
         document.querySelectorAll("input[type=text]").forEach(x => x.addEventListener("focus", () => x.select()));
     </script>
