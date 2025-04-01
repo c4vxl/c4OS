@@ -318,7 +318,7 @@ function setup_desktop_env() {
 function setup_theme() {
     if [[ "$THEME" != "" ]]; then
         echo ">>> Creating theme installation process..."
-        execute_on_first_login "sleep 1 && dbus-launch \\\$(yes $PASSWORD | themes --install=$THEME)"
+        execute_on_first_login "sleep 1 && dbus-launch bash -c \\\"echo $PASSWORD | themes --install=$THEME &\\\""
     fi
 }
 
