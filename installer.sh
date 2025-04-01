@@ -13,12 +13,14 @@ WIFI_PW=""
 DESKTOP_ENV="gnome"
 NO_TOUR=false
 NO_THEME_SWITCHER=false
-PACKAGES="base linux linux-firmware nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip"
+PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip"
 FB_SCRIPTS=""
 SOFTWARE=""
 NO_OSFLASH=false
 KEYMAP="us"
 KEEP_STARTUP_SCRIPTS=false
+
+SELF_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 for ARG in "$@"; do
   case $ARG in
@@ -72,7 +74,10 @@ for ARG in "$@"; do
       SOFTWARE="${SOFTWARE//[,;]/ }"
       ;;
     --keymap=*)
-      KEYMAP+="${ARG#*=}"
+      KEYMAP="${ARG#*=}"
+      ;;
+    --runat=*)
+      cd "${ARG#*=}"
       ;;
     --no-theme-switcher)
       NO_THEME_SWITCHER=true
@@ -103,6 +108,7 @@ for ARG in "$@"; do
       echo "  | --fbs=<shell_code>                    ; Add code to be run on first login into the system (May be passed multiple times)."
       echo "  | --software=<software>                 ; Add preinstalled software (May be passed multiple times). (Seperate by comma)"
       echo "  | --keymap=<keymap>                     ; Set the keyboard layout. (Default: 'us')"
+      echo "  | --runat=<dir>                         ; Change the directory where to run this script in."
       echo "  | --no-tour                             ; Don't show a tour at the first startup of the os."
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
       echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
@@ -298,7 +304,7 @@ function setup_gnome() {
 
     execute_on_first_login "
 dconf load / << EOF
-$(cat configs/gnome/keybinds)
+$(cat $SELF_DIR/configs/gnome/keybinds)
 EOF
     "
 }
@@ -319,7 +325,7 @@ function setup_theme() {
 function setup_theme_switcher() {
     if [[ "$NO_THEME_SWITCHER" == "false" ]]; then
         echo ">> Installing theme switcher"
-        sudo cp -R "programs/theme_switcher/" "$INSTALLATION_RUNTIME/home/$USERNAME/.theme_switcher"
+        sudo cp -R "$SELF_DIR/programs/theme_switcher/" "$INSTALLATION_RUNTIME/home/$USERNAME/.theme_switcher"
         execute_as_user "
         cd .theme_switcher
         yes $PASSWORD | sudo -S sh setup.sh
@@ -333,7 +339,7 @@ function prepare_tour() {
     if [[ "$NO_TOUR" == "false" ]]; then
         echo ">>> Preparing tour..."
         sudo mkdir "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
-        sudo cp programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
+        sudo cp $SELF_DIR/programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
 
         echo "  | Installing required packages."
         execute_as_root "pip install PyGObject pywebview flask --break-system-packages"
@@ -352,7 +358,7 @@ function prepare_tour() {
 }
 
 function install_software() {
-    cp "configs/app/$1.app.sh" "$INSTALLATION_RUNTIME/home/$USERNAME/.$1.app.sh"
+    cp "$SELF_DIR/configs/app/$1.app.sh" "$INSTALLATION_RUNTIME/home/$USERNAME/.$1.app.sh"
     execute_as_user "
     echo $PASSWORD | sudo -S -v
     sh .$1.app.sh
