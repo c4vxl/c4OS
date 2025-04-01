@@ -450,7 +450,7 @@
             configuration.bootloaderid = get("setup__input__bootloader__id") || "None";
             configuration.theme = document.querySelector("#themes__slider .slide.active img").alt;
             configuration.desktopenv = document.querySelector("#setup__input__desktop_env span.active").innerHTML.toLowerCase();
-            configuration.keyboard = document.querySelector("#setup__input__keyboard").value
+            configuration.keyboard = document.querySelector("#setup__input__keyboard").value;
 
             displayConfiguration(document.querySelector("#overview"));
         }
