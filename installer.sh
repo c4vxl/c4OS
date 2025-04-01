@@ -265,9 +265,9 @@ function load_base() {
     yes \"$PASSWORD\" | passwd $USERNAME
     "
 
+    sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
     if [[ "$SWAP_SIZE" != "n" ]]; then
       echo "  | Generating swap."
-      sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
       sudo fallocate -l $SWAP_SIZE $INSTALLATION_RUNTIME/swapfile
       sudo chmod 600 $INSTALLATION_RUNTIME/swapfile
       sudo mkswap $INSTALLATION_RUNTIME/swapfile
