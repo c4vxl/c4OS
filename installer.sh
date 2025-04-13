@@ -240,6 +240,7 @@ function setup_grub() {
     if [ "$CHANGE_GRUB_DISTRIBUTOR" != "false" ]; then
         echo "  | Changing grub distributor..."
         sed -i "s/^GRUB_DISTRIBUTOR=\"[^\"]*\"/GRUB_DISTRIBUTOR=\"$BOOTLOADER_ID\"/" "$INSTALLATION_RUNTIME/etc/default/grub"
+        execute_as_root "grub-mkconfig -o /boot/grub/grub.cfg"
     fi
 }
 
