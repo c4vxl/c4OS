@@ -8,3 +8,5 @@ cd diodon-1.13.0
 meson setup build
 meson compile -C build
 sudo meson install -C build
+cd ..
+sudo rm -R diodon-1.13.0
