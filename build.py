@@ -54,7 +54,7 @@ def interprete_file(file):
 
 def replace_flask_temp(file, src):
     file = file
-    new = re.sub(r'return """.*?"""', 'return """--source--"""', open(file, "r").read(), re.DOTALL).replace("--source--", src)
+    new = re.sub(r'(?s)return """.*?"""', 'return """--source--"""', open(file, "r").read(), re.DOTALL).replace("--source--", src)
     open(file, "w").write(new)
 
 def compile_to_template(file):

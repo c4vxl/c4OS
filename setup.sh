@@ -7,7 +7,7 @@ sudo rm -R /usr/bin/c4OSInstaller
 
 sudo mkdir -p /usr/bin/c4OSInstaller
 
-sudo pacman -S tk --noconfirm
+sudo pacman -S tk webkit2gtk dosfstools --noconfirm
 pip install qtpy PyGObject customtkinter flask pywebview requests PyQt5 PyQtWebEngine --break-system-packages
 
 

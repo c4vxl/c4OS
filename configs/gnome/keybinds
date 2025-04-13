@@ -26,3 +26,8 @@ name='shutdown'
 binding='<Super>t'
 command='gnome-terminal -- zsh'
 name='terminal'
+
+[org/gnome/shell/keybindings]
+screenshot=@as []
+show-screenshot-ui=['<Shift><Super>s']
+toggle-message-tray=@as []

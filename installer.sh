@@ -14,11 +14,14 @@ DESKTOP_ENV="gnome"
 NO_TOUR=false
 NO_THEME_SWITCHER=false
 PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip"
-FB_SCRIPTS=""
-SOFTWARE=""
-NO_OSFLASH=false
+FL_SCRIPTS=""
+KEEP_FLS=false
+EXEC=""
+SOFTWARE="osflash,c4osinstall"
 KEYMAP="us"
-KEEP_STARTUP_SCRIPTS=false
+CHANGE_GRUB_DISTRIBUTOR=true
+KEEP_TOUR=true
+CLIPBOARD_HISTORY=true
 
 SELF_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
@@ -66,8 +69,11 @@ for ARG in "$@"; do
     --no-tour)
       NO_TOUR=true
       ;;
-    --fbs=*)
-      FB_SCRIPTS+="\n${ARG#*=}"
+    --fls=*)
+      FL_SCRIPTS+="\n${ARG#*=}"
+      ;;
+    --exec=*)
+      EXEC+="\n${ARG#*=}"
       ;;
     --software=*)
       SOFTWARE+="${ARG#*=}"
@@ -83,10 +89,22 @@ for ARG in "$@"; do
       NO_THEME_SWITCHER=true
       ;;
     --no-osflash)
-      NO_OSFLASH=true
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?osflash(,|\s)?//g')"
       ;;
-    --keep-fbs)
-      KEEP_STARTUP_SCRIPTS=true
+    --no-c4osinstall)
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?c4osinstall(,|\s)?//g')"
+      ;;
+    --no-keep-tour)
+      KEEP_TOUR=false
+      ;;
+    --no-clipboard-history)
+      CLIPBOARD_HISTORY=false
+      ;;
+    --keep-fls)
+      KEEP_FLS=true
+      ;;
+    --default-grub-name)
+      CHANGE_GRUB_DISTRIBUTOR=false
       ;;
     *)
 
@@ -105,14 +123,19 @@ for ARG in "$@"; do
       echo "  | --desktop-env=<desktop_environment>   ; The desktop environment to use (Options: gnome, none; Default: gnome)."
       echo "  | --bootloader-id=<name>                ; The name the new OS should show up in bios. (Default: c4OS)"
       echo "  | --packages=<packages>                 ; Set the list of default packages to strap onto the installation at the beginning. (Don't touch!!!)"
-      echo "  | --fbs=<shell_code>                    ; Add code to be run on first login into the system (May be passed multiple times)."
+      echo "  | --fls=<shell_code>                    ; Add code to be run on first login into the system (May be passed multiple times)."
+      echo "  | --exec=<shell_code>                   ; Add code to run code on the system as root (May be passed multiple times)."
       echo "  | --software=<software>                 ; Add preinstalled software (May be passed multiple times). (Seperate by comma)"
       echo "  | --keymap=<keymap>                     ; Set the keyboard layout. (Default: 'us')"
       echo "  | --runat=<dir>                         ; Change the directory where to run this script in."
       echo "  | --no-tour                             ; Don't show a tour at the first startup of the os."
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
       echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
-      echo "  | --keep-fbs                            ; If specified, first login scripts will be kept (for debugging)."
+      echo "  | --no-c4osinstall                      ; Prevents from installing this installer as a command on the new system."
+      echo "  | --no-keep-tour                        ; Removes the tour programm after running it once."
+      echo "  | --no-clipboard-history                ; Prevent from installing the 'Diodon' clipboard history."
+      echo "  | --keep-fls                            ; Won't remove first-login-scripts after executing once."
+      echo "  | --default-grub-name                   ; If specified, the script won't change the name of your Operating system in grub."
       exit
       ;;
   esac
@@ -149,7 +172,7 @@ function prepare_partitions() {
     
     echo "  | Unmounting EFI."
     umount -R "$EFI" &> /dev/null
-    echo "  | Formatting EFI". &> /dev/null
+    echo "  | Formatting EFI."
     mkfs.fat -F 32 "$EFI" &> /dev/null
 
     echo "  | Unmounting Root."
@@ -188,22 +211,21 @@ function execute_on_first_login() {
     echo "  | Creating first-login-task $uuid"
     path="/home/$USERNAME/.cache/.first_login_installer/$uuid"
     sudo mkdir -p "$INSTALLATION_RUNTIME/home/$USERNAME/.cache/.first_login_installer/"
-
     execute_as_root "
     if [ ! -f \"$path\" ]; then
         echo '#!/bin/bash' > \"$path\"
         echo \"$1\" >> \"$path\"
         chmod 777 \"$path\"
-        echo '[[ -f ~/.is_first_login ]] && $path' >> \"/home/$USERNAME/.profile\"
+        echo '[[ -f ~/.is_first_login ]] && sh $path' >> \"/home/$USERNAME/.profile\"
     fi
     "
+    sudo chmod 777 -R "$INSTALLATION_RUNTIME/home/$USERNAME/.cache/.first_login_installer/"
 }
 
 function setup_grub() {
     execute_as_root "
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
     sudo pacman -S os-prober --noconfirm
-    sed -i \"s/^GRUB_DISTRIBUTOR=\\\"[^\\\"]*\\\"/GRUB_DISTRIBUTOR=\\\"$BOOTLOADER_ID\\\"/\" /etc/default/grub
     sed -i 's/^#GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
     grub-mkconfig -o /boot/grub/grub.cfg
@@ -214,6 +236,11 @@ function setup_grub() {
     cd ..
     sudo rm -R grub2-themes
     "
+
+    if [ "$CHANGE_GRUB_DISTRIBUTOR" != "false" ]; then
+        echo "  | Changing grub distributor..."
+        sed -i "s/^GRUB_DISTRIBUTOR=\"[^\"]*\"/GRUB_DISTRIBUTOR=\"$BOOTLOADER_ID\"/" "$INSTALLATION_RUNTIME/etc/default/grub"
+    fi
 }
 
 function load_base() {
@@ -246,7 +273,7 @@ function load_base() {
     "
 
     echo "  | Loading keymap."
-    execute_as_root "setxkbmap $KEYMAP"
+    execute_on_first_login "sleep 8 && setxkbmap $KEYMAP &"
 
     echo "  | Installing yay."
     execute_as_root "
@@ -266,12 +293,10 @@ function load_base() {
     "
 
     sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
-    if [[ "$SWAP_SIZE" != "n" ]]; then
+    if [ "$SWAP_SIZE" != "n" ]; then
       echo "  | Generating swap."
-      sudo fallocate -l $SWAP_SIZE $INSTALLATION_RUNTIME/swapfile
-      sudo chmod 600 $INSTALLATION_RUNTIME/swapfile
-      sudo mkswap $INSTALLATION_RUNTIME/swapfile
-      echo '/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
+      sudo mkswap -U clear --size 4G --file $INSTALLATION_RUNTIME/etc/swapfile
+      echo '/etc/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
     fi
 
     echo "  | Creating Desktop."
@@ -279,7 +304,7 @@ function load_base() {
 }
 
 function load_wifi() {
-    if [[ "$WIFI" != "" ]]; then
+    if [ "$WIFI" != "" ]; then
         execute_on_first_login "
         yes $PASSWORD | sudo -S nmcli device wifi connect \\\"$WIFI\\\" password \\\"$WIFI_PW\\\"
         "
@@ -310,20 +335,23 @@ EOF
 }
 
 function setup_desktop_env() {
-    if [[ "$DESKTOP_ENV" == "gnome" ]]; then
+    if [ "$DESKTOP_ENV" == "gnome" ]; then
         setup_gnome
     fi
 }
 
 function setup_theme() {
-    if [[ "$THEME" != "" ]]; then
+    if [ "$THEME" != "" ]; then
         echo ">>> Creating theme installation process..."
-        execute_on_first_login "sleep 1 && dbus-launch bash -c \\\"echo $PASSWORD | themes --install=$THEME &\\\""
+        echo "import subprocess" >> "$INSTALLATION_RUNTIME/home/$USERNAME/.cache/.first_login_installer/.setup_theme.py"
+        echo "subprocess.run(f\"sleep 1 && yes $PASSWORD | themes --install=$THEME\", shell=True)" >> "$INSTALLATION_RUNTIME/home/$USERNAME/.cache/.first_login_installer/.setup_theme.py"
+        execute_as_root "mkdir -p /home/$USERNAME/.cache/.dotcache && sudo chmod 777 -R /home/$USERNAME/.cache/.dotcache"
+        execute_on_first_login "python ~/.cache/.first_login_installer/.setup_theme.py"
     fi
 }
 
 function setup_theme_switcher() {
-    if [[ "$NO_THEME_SWITCHER" == "false" ]]; then
+    if [ "$NO_THEME_SWITCHER" == "false" ]; then
         echo ">> Installing theme switcher"
         sudo cp -R "$SELF_DIR/programs/theme_switcher/" "$INSTALLATION_RUNTIME/home/$USERNAME/.theme_switcher"
         execute_as_user "
@@ -336,7 +364,7 @@ function setup_theme_switcher() {
 }
 
 function prepare_tour() {
-    if [[ "$NO_TOUR" == "false" ]]; then
+    if [ "$NO_TOUR" == "false" ]; then
         echo ">>> Preparing tour..."
         sudo mkdir "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
         sudo cp $SELF_DIR/programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
@@ -374,18 +402,6 @@ function prepare_software() {
     done
 }
 
-function install_osflash() {
-    if [[ "$NO_OSFLASH" == "false" ]]; then
-        execute_as_root "
-        git clone https://github.com/c4vxl/OSFlash
-        cd OSFlash
-        sh ./setup.sh
-        cd ..
-        sudo rm -R OSFlash
-        "
-    fi
-}
-
 prepare_partitions
 prepare_env
 load_base
@@ -394,19 +410,33 @@ setup_desktop_env
 prepare_tour
 setup_theme
 prepare_software
-install_osflash
 setup_theme_switcher
 
-if [[ "$FB_SCRIPTS" != "" ]]; then
-  execute_on_first_login $FB_SCRIPTS
+if [ "$FL_SCRIPTS" != "" ]; then
+  echo $FL_SCRIPTS
+  execute_on_first_login $FL_SCRIPTS
+fi
+
+# Install diodon
+if [ "$CLIPBOARD_HISTORY" == "true" ]; then
+  install_software "diodon"
 fi
 
 # Remove password if the initial password was set to ""
-if [[ "$PASSWORD" == "" ]]; then
+if [ "$PASSWORD" == "" ]; then
     echo ">>> Removing password..."
     execute_as_root "yes \"$PASSWORD\" | sudo -S passwd -d $USERNAME"
 fi
 
+execute_as_root "$EXEC"
+
 # Enable the first-login-services
 touch "$INSTALLATION_RUNTIME/home/$USERNAME/.is_first_login"
-execute_on_first_login "rm .is_first_login && [[ \"$KEEP_STARTUP_SCRIPTS\" == \"false\" ]] && yes | rm -R .cache/.first_login_installer"
+if [ "$KEEP_FLS" == "false" ]; then
+  execute_on_first_login "bash -c \\\"sleep 10 && yes | rm -Rf .cache/.first_login_installer/\\\" &"
+  execute_on_first_login "bash -c \\\"sleep 10 && rm .is_first_login && echo '' > .profile\\\" &"
+fi
+
+if [ "$KEEP_TOUR" == "false" ]; then
+  execute_on_first_login "bash -c \\\"sleep 5 && yes $PASSWORD | sudo -S rm -rf /usr/bin/tour_src /usr/bin/tour\\\" &"
+fi
