@@ -23,3 +23,4 @@ sudo tar -xvzf vsc.tar.gz --strip-components=1
 sudo ln -s /usr/bin/vscode/bin/code /usr/bin/code
 
 cp /usr/share/applications/code.desktop ~/Desktop/code.desktop
+sudo chmod +x ~/Desktop/code.desktop

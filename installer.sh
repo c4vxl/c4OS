@@ -17,7 +17,7 @@ PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bl
 FL_SCRIPTS=""
 KEEP_FLS=false
 EXEC=""
-SOFTWARE="osflash,c4osinstall"
+SOFTWARE="osflash,c4osinstall,"
 KEYMAP="us"
 CHANGE_GRUB_DISTRIBUTOR=true
 KEEP_TOUR=true
@@ -295,9 +295,9 @@ function load_base() {
 
     sudo sed -i '/\/swapfile\s\+none\s\+swap\s\+defaults\s\+0\s\+0/d' "$INSTALLATION_RUNTIME/etc/fstab"
     if [ "$SWAP_SIZE" != "n" ]; then
-      echo "  | Generating swap."
-      sudo mkswap -U clear --size 4G --file $INSTALLATION_RUNTIME/etc/swapfile
-      echo '/etc/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
+        echo "  | Generating swap."
+        sudo mkswap -U clear --size 4G --file $INSTALLATION_RUNTIME/etc/swapfile
+        echo '/etc/swapfile none swap sw 0 0' | sudo tee -a $INSTALLATION_RUNTIME/etc/fstab
     fi
 
     echo "  | Creating Desktop."
@@ -414,13 +414,14 @@ prepare_software
 setup_theme_switcher
 
 if [ "$FL_SCRIPTS" != "" ]; then
-  echo $FL_SCRIPTS
-  execute_on_first_login $FL_SCRIPTS
+    echo $FL_SCRIPTS
+    execute_on_first_login $FL_SCRIPTS
 fi
 
 # Install diodon
 if [ "$CLIPBOARD_HISTORY" == "true" ]; then
-  install_software "diodon"
+    execute_as_root "sudo pacman -S python-markupsafe --overwrite \"*\" --noconfirm"
+    execute_as_user "bash -c \\\"yes $PASSWORD | sudo -Sv && yay -S diodon --noconfirm \\\""
 fi
 
 # Remove password if the initial password was set to ""
@@ -434,10 +435,10 @@ execute_as_root "$EXEC"
 # Enable the first-login-services
 touch "$INSTALLATION_RUNTIME/home/$USERNAME/.is_first_login"
 if [ "$KEEP_FLS" == "false" ]; then
-  execute_on_first_login "bash -c \\\"sleep 10 && yes | rm -Rf .cache/.first_login_installer/\\\" &"
-  execute_on_first_login "bash -c \\\"sleep 10 && rm .is_first_login && echo '' > .profile\\\" &"
+    execute_on_first_login "bash -c \\\"sleep 10 && yes | rm -Rf .cache/.first_login_installer/\\\" &"
+    execute_on_first_login "bash -c \\\"sleep 10 && rm .is_first_login && echo '' > .profile\\\" &"
 fi
 
 if [ "$KEEP_TOUR" == "false" ]; then
-  execute_on_first_login "bash -c \\\"sleep 5 && yes $PASSWORD | sudo -S rm -rf /usr/bin/tour_src /usr/bin/tour\\\" &"
+    execute_on_first_login "bash -c \\\"sleep 5 && yes $PASSWORD | sudo -S rm -rf /usr/bin/tour_src /usr/bin/tour\\\" &"
 fi
