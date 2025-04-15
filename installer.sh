@@ -305,13 +305,13 @@ function load_base() {
     execute_as_user "mkdir Desktop"
 
     echo "  | Creating file templates."
-    mkdir -p "$INSTALLATION_RUNTIME/home/owner/Templates"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/Empty Document"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/New Text Document.txt"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/script.py"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/script.sh"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/data.xml"
-    touch "$INSTALLATION_RUNTIME/home/owner/Templates/data.json"
+    mkdir -p "$INSTALLATION_RUNTIME/home/$USERNAME/Templates"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/Empty Document"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/New Text Document.txt"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/New Python Script.py"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/New Shell Script.sh"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/XML.xml"
+    touch "$INSTALLATION_RUNTIME/home/$USERNAME/Templates/JSON.json"
 }
 
 function load_wifi() {
