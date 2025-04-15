@@ -13,7 +13,8 @@ WIFI_PW=""
 DESKTOP_ENV="gnome"
 NO_TOUR=false
 NO_THEME_SWITCHER=false
-PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip"
+FONT_PACKAGES="adobe-source-code-pro-fonts cantarell-fonts gsfonts noto-fonts"
+PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip $FONT_PACKAGES"
 FL_SCRIPTS=""
 KEEP_FLS=false
 EXEC=""
@@ -302,6 +303,15 @@ function load_base() {
 
     echo "  | Creating Desktop."
     execute_as_user "mkdir Desktop"
+
+    echo "  | Creating file templates."
+    mkdir -p "$INSTALLATION_RUNTIME/home/owner/Templates"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/Empty Document"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/New Text Document.txt"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/script.py"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/script.sh"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/data.xml"
+    touch "$INSTALLATION_RUNTIME/home/owner/Templates/data.json"
 }
 
 function load_wifi() {
@@ -413,6 +423,10 @@ setup_theme
 prepare_software
 setup_theme_switcher
 
+# Create cache
+sudo mkdir -p $INSTALLATION_RUNTIME/home/$USERNAME/.cache
+sudo chmod 777 -R $INSTALLATION_RUNTIME/home/$USERNAME/.cache
+
 if [ "$FL_SCRIPTS" != "" ]; then
     echo $FL_SCRIPTS
     execute_on_first_login $FL_SCRIPTS
@@ -435,8 +449,8 @@ execute_as_root "$EXEC"
 # Enable the first-login-services
 touch "$INSTALLATION_RUNTIME/home/$USERNAME/.is_first_login"
 if [ "$KEEP_FLS" == "false" ]; then
-    execute_on_first_login "bash -c \\\"sleep 10 && yes | rm -Rf .cache/.first_login_installer/\\\" &"
-    execute_on_first_login "bash -c \\\"sleep 10 && rm .is_first_login && echo '' > .profile\\\" &"
+    execute_on_first_login "yes $PASSWORD | sudo -S bash -c \\\"sleep 10 && rm -Rf .cache/.first_login_installer/\\\" &"
+    execute_on_first_login "yes $PASSWORD | sudo -S bash -c \\\"sleep 10 && rm .is_first_login && echo '' > .profile\\\" &"
 fi
 
 if [ "$KEEP_TOUR" == "false" ]; then
