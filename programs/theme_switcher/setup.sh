@@ -3,8 +3,8 @@
 sudo rm /usr/bin/themes
 sudo rm -R /usr/bin/c4themes
 
-# sudo pacman -S tk --noconfirm
-# pip install qtpy PyGObject customtkinter flask pywebview requests --break-system-packages
+sudo pacman -S tk --noconfirm
+pip install qtpy PyGObject customtkinter flask pywebview requests --break-system-packages
 sudo mkdir /usr/bin/c4themes
 
 sudo tee /usr/bin/c4themes/wrapper > /dev/null <<EOF
