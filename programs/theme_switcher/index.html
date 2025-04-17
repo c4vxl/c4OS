@@ -15,7 +15,7 @@
 
         body.dark {
             --bg: #1f1f20;
-            --text: #ffffff;
+            --text: #979393;
             --text-accent: #000000;
             --primary: rgb(62, 62, 94);
         }
@@ -115,7 +115,7 @@
 
     <div class="modal" id="source__modal" onclick="this.classList.toggle('active')">
         <p>Source:</p>
-        <input type="text" class="primary br" onfocus="this.select()" onclick="this.parentNode.classList.toggle('active')">
+        <input type="text" class="primary br" autofocus autocapitalize="off" autocomplete="off" autocorrect="off" onfocus="this.select()" onclick="this.parentNode.classList.toggle('active')">
     </div>
 
     <div class="hr"></div>
@@ -123,7 +123,7 @@
     <input type="text" class="secondary br" placeholder="Search" style="width: 90vw; max-width: 50ch; margin: 10px 0px;" autofocus id="search__bar">
 
     <div class="themes">
-        <!--JS will put themes in-->
+        <!--JS will put themes in here-->
     </div>
 
     <script>
