@@ -329,6 +329,7 @@ function setup_gnome() {
     pacman -S gnome gdm gnome-shell gnome-terminal gnome-shell-extensions gnome-tweaks gnome-browser-connector gnome-text-editor gnome-shell-extension-desktop-icons-ng --noconfirm
     pacman -R gnome-tour malcontent --noconfirm
     sed -i 's/^#WaylandEnable=false$/WaylandEnable=false/' /etc/gdm/custom.conf
+    systemctl enable gdm
     "
 
     echo "  | Configuring gnome."
