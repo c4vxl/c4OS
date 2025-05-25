@@ -326,7 +326,7 @@ function setup_gnome() {
     echo ">>> Installing gnome..."
     echo "  | Getting packages."
     execute_as_root "
-    pacman -S gnome gnome-shell gnome-terminal gnome-shell-extensions gnome-tweaks gnome-browser-connector gnome-text-editor gnome-shell-extension-desktop-icons-ng --noconfirm
+    pacman -S gnome gdm gnome-shell gnome-terminal gnome-shell-extensions gnome-tweaks gnome-browser-connector gnome-text-editor gnome-shell-extension-desktop-icons-ng --noconfirm
     pacman -R gnome-tour malcontent --noconfirm
     sed -i 's/^#WaylandEnable=false$/WaylandEnable=false/' /etc/gdm/custom.conf
     "
