@@ -226,10 +226,12 @@ function execute_on_first_login() {
 function setup_grub() {
     execute_as_root "
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
-    sudo pacman -S os-prober --noconfirm
+    sudo pacman -S os-prober ntfs-3g --noconfirm
+    sudo chmod -x /etc/grub.d/30_uefi-firmware
     sed -i 's/^#GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
     grub-mkconfig -o /boot/grub/grub.cfg
+    sudo sed -i '/fallback initramfs/,+10d' /boot/grub/grub.cfg
 
     git clone "https://github.com/vinceliuice/grub2-themes.git"
     cd grub2-themes
