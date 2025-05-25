@@ -14,11 +14,11 @@ DESKTOP_ENV="gnome"
 NO_TOUR=false
 NO_THEME_SWITCHER=false
 FONT_PACKAGES="adobe-source-code-pro-fonts cantarell-fonts gsfonts noto-fonts"
-PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript neofetch grub efibootmgr git xorg git base-devel wget python-pip pipewire pipewire-pulse gparted arch-install-scripts $FONT_PACKAGES"
+PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bluez cups ghostscript grub efibootmgr git xorg git base-devel wget python-pip pipewire pipewire-pulse gparted arch-install-scripts $FONT_PACKAGES"
 FL_SCRIPTS=""
 KEEP_FLS=false
 EXEC=""
-SOFTWARE="osflash,c4osinstall,"
+SOFTWARE="osflash,c4osinstall,neofetch,"
 KEYMAP="us"
 CHANGE_GRUB_DISTRIBUTOR=true
 KEEP_TOUR=true
@@ -326,10 +326,9 @@ function setup_gnome() {
     echo ">>> Installing gnome..."
     echo "  | Getting packages."
     execute_as_root "
-    pacman -S gnome gdm gnome-shell gnome-terminal gnome-shell-extensions gnome-tweaks gnome-browser-connector gnome-text-editor gnome-shell-extension-desktop-icons-ng pulseaudio --noconfirm
+    pacman -S gnome gnome-shell gnome-terminal gnome-shell-extensions gnome-tweaks gnome-browser-connector gnome-text-editor gnome-shell-extension-desktop-icons-ng --noconfirm
     pacman -R gnome-tour malcontent --noconfirm
     sed -i 's/^#WaylandEnable=false$/WaylandEnable=false/' /etc/gdm/custom.conf
-    systemctl enable gdm
     "
 
     echo "  | Configuring gnome."
@@ -435,7 +434,19 @@ fi
 # Install diodon
 if [ "$CLIPBOARD_HISTORY" == "true" ]; then
     execute_as_root "sudo pacman -S python-markupsafe --overwrite \"*\" --noconfirm"
-    execute_as_user "bash -c \\\"yes $PASSWORD | sudo -Sv && yay -S diodon --noconfirm \\\""
+    execute_as_root "
+    sudo pacman -S meson ninja base-devel gtk3 glib2 --noconfirm
+    curl https://codeload.github.com/diodon-dev/diodon/tar.gz/refs/tags/1.13.0 -o src.tar.gz
+    tar -xzf src.tar.gz
+    cd diodon-1.13.0
+    mkdir build
+    cd build
+    meson ..
+    ninja
+    sudo ninja install
+    cd ../..
+    sudo rm -R diodon-1.13.0
+    "
 fi
 
 # Remove password if the initial password was set to ""
