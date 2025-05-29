@@ -74,7 +74,11 @@ for ARG in "$@"; do
       FL_SCRIPTS+="\n${ARG#*=}"
       ;;
     --exec=*)
-      EXEC+="\n${ARG#*=}"
+      if [ "$EXEC" == "" ]; then
+        EXEC+="${ARG#*=}"
+      else
+        EXEC+="\n${ARG#*=}"
+      fi      
       ;;
     --software=*)
       SOFTWARE+="${ARG#*=}"
