@@ -447,7 +447,7 @@ fi
 if [ "$CLIPBOARD_HISTORY" == "true" ]; then
     execute_as_root "sudo pacman -S python-markupsafe --overwrite \"*\" --noconfirm"
     execute_as_root "
-    sudo pacman -S meson ninja base-devel gtk3 glib2 --noconfirm
+    sudo pacman -S meson ninja base-devel gtk3 glib2 libayatana-appindicator zeitgeist gobject-introspection --noconfirm
     curl https://codeload.github.com/diodon-dev/diodon/tar.gz/refs/tags/1.13.0 -o src.tar.gz
     tar -xzf src.tar.gz
     cd diodon-1.13.0
@@ -458,6 +458,8 @@ if [ "$CLIPBOARD_HISTORY" == "true" ]; then
     sudo ninja install
     cd ../..
     sudo rm -R diodon-1.13.0
+    echo /usr/local/lib | sudo tee /etc/ld.so.conf.d/usr-local.conf
+    ldconfig
     "
 fi
 
