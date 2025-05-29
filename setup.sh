@@ -14,7 +14,7 @@ pip install qtpy PyGObject customtkinter flask pywebview requests PyQt5 PyQtWebE
 sudo tee /usr/bin/c4OSInstaller/wrapper_py > /dev/null <<EOF
 #!/bin/bash
 cd /usr/bin/c4OSInstaller/
-python /usr/bin/c4OSInstaller/installer.py "\$@"
+python3 /usr/bin/c4OSInstaller/installer.py "\$@"
 EOF
 sudo tee /usr/bin/c4OSInstaller/wrapper_sh > /dev/null <<EOF
 #!/bin/bash

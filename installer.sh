@@ -392,7 +392,7 @@ function prepare_tour() {
         sudo cp $SELF_DIR/programs/tour/tour.py "$INSTALLATION_RUNTIME/usr/bin/tour_src/"
 
         echo "  | Installing required packages."
-        execute_as_root "pip install PyGObject pywebview flask --break-system-packages"
+        execute_as_root "python3 -m pip install PyGObject pywebview flask --break-system-packages"
 
         echo "  | Preparing wrapper."
         execute_as_root "
