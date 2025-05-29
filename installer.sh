@@ -18,7 +18,7 @@ PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bl
 FL_SCRIPTS=""
 KEEP_FLS=false
 EXEC=""
-SOFTWARE="osflash,c4osinstall,neofetch,"
+SOFTWARE="osflash,c4osinstall,neofetch,fileserver,mkgallery,scrapeutils,"
 KEYMAP="us"
 CHANGE_GRUB_DISTRIBUTOR=true
 KEEP_TOUR=true
@@ -94,6 +94,15 @@ for ARG in "$@"; do
       ;;
     --no-c4osinstall)
       SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?c4osinstall(,|\s)?//g')"
+      ;;
+    --no-fileserver)
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?fileserver(,|\s)?//g')"
+      ;;
+    --no-mkgallery)
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?mkgallery(,|\s)?//g')"
+      ;;
+    --no-scrape-utils)
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?scrapeutils(,|\s)?//g')"
       ;;
     --no-keep-tour)
       KEEP_TOUR=false
