@@ -14,7 +14,7 @@ terminal='<Super>t'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Super>v'
-command='/usr/bin/diodon'
+command='/usr/local/bin/diodon'
 name='diodon'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]

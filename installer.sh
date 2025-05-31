@@ -18,7 +18,7 @@ PACKAGES="base linux linux-firmware bash nano sudo networkmanager bluez-utils bl
 FL_SCRIPTS=""
 KEEP_FLS=false
 EXEC=""
-SOFTWARE="osflash,c4osinstall,neofetch,fileserver,mkgallery,scrapeutils,"
+SOFTWARE="osflash,c4osinstall,neofetch,fileserver,mkgallery,scrapeutils,diodon,"
 KEYMAP="us"
 CHANGE_GRUB_DISTRIBUTOR=true
 KEEP_TOUR=true
@@ -108,11 +108,11 @@ for ARG in "$@"; do
     --no-scrape-utils)
       SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?scrapeutils(,|\s)?//g')"
       ;;
+    --no-clipboard-history)
+      SOFTWARE="$(echo "$SOFTWARE" | sed -E 's/(^|\s|,)?diodon(,|\s)?//g')"
+      ;;
     --no-keep-tour)
       KEEP_TOUR=false
-      ;;
-    --no-clipboard-history)
-      CLIPBOARD_HISTORY=false
       ;;
     --keep-fls)
       KEEP_FLS=true
@@ -445,26 +445,6 @@ sudo chmod 777 -R $INSTALLATION_RUNTIME/home/$USERNAME/.cache
 if [ "$FL_SCRIPTS" != "" ]; then
     echo $FL_SCRIPTS
     execute_on_first_login $FL_SCRIPTS
-fi
-
-# Install diodon
-if [ "$CLIPBOARD_HISTORY" == "true" ]; then
-    execute_as_root "sudo pacman -S python-markupsafe --overwrite \"*\" --noconfirm"
-    execute_as_root "
-    sudo pacman -S meson ninja base-devel gtk3 glib2 libayatana-appindicator zeitgeist gobject-introspection --noconfirm
-    curl https://codeload.github.com/diodon-dev/diodon/tar.gz/refs/tags/1.13.0 -o src.tar.gz
-    tar -xzf src.tar.gz
-    cd diodon-1.13.0
-    mkdir build
-    cd build
-    meson ..
-    ninja
-    sudo ninja install
-    cd ../..
-    sudo rm -R diodon-1.13.0
-    echo /usr/local/lib | sudo tee /etc/ld.so.conf.d/usr-local.conf
-    ldconfig
-    "
 fi
 
 # Remove password if the initial password was set to ""
