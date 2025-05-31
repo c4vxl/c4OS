@@ -22,7 +22,7 @@ SOFTWARE="osflash,c4osinstall,neofetch,fileserver,mkgallery,scrapeutils,diodon,"
 KEYMAP="us"
 CHANGE_GRUB_DISTRIBUTOR=true
 KEEP_TOUR=true
-CLIPBOARD_HISTORY=true
+DETECT_OTHER_OS=true
 
 SELF_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
@@ -114,6 +114,9 @@ for ARG in "$@"; do
     --no-keep-tour)
       KEEP_TOUR=false
       ;;
+    --no-detect-other-os)
+      DETECT_OTHER_OS=false
+      ;;
     --keep-fls)
       KEEP_FLS=true
       ;;
@@ -146,8 +149,12 @@ for ARG in "$@"; do
       echo "  | --no-theme-switcher                   ; Prevents from installing the 'Theme-Switcher' app."
       echo "  | --no-osflash                          ; Prevents from installing the 'OSFlash' tool."
       echo "  | --no-c4osinstall                      ; Prevents from installing this installer as a command on the new system."
-      echo "  | --no-keep-tour                        ; Removes the tour programm after running it once."
+      echo "  | --no-fileserver                       ; Prevents from installing the 'FileServer' tool."
+      echo "  | --no-mkgallery                        ; Prevents from installing the 'MKGallery' tool."
+      echo "  | --no-scrape-utils                     ; Prevents from installing the 'ScrapeUtils' tool."
       echo "  | --no-clipboard-history                ; Prevent from installing the 'Diodon' clipboard history."
+      echo "  | --no-detect-other-os                  ; Prevent from adding any other OS to grub. (Diables os-prober)"
+      echo "  | --no-keep-tour                        ; Removes the tour programm after running it once."
       echo "  | --keep-fls                            ; Won't remove first-login-scripts after executing once."
       echo "  | --default-grub-name                   ; If specified, the script won't change the name of your Operating system in grub."
       exit
@@ -241,7 +248,13 @@ function setup_grub() {
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
     sudo pacman -S os-prober ntfs-3g --noconfirm
     sudo chmod -x /etc/grub.d/30_uefi-firmware
-    sed -i 's/^#GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    "
+
+    if [ "$DETECT_OTHER_OS" == "true" ]; then
+      execute_as_root "sed -i 's/^#GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub"
+    fi
+
+    execute_as_root "
     grub-install --efi-directory=/boot/efi/ --bootloader-id=\"$BOOTLOADER_ID\"
     grub-mkconfig -o /boot/grub/grub.cfg
     sudo sed -i '/fallback initramfs/,+10d' /boot/grub/grub.cfg
