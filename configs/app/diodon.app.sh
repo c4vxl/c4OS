@@ -14,6 +14,7 @@ sudo rm -R diodon-1.13.0
 echo /usr/local/lib | sudo tee /etc/ld.so.conf.d/usr-local.conf
 ldconfig
 
+sudo mkdir -p ~/.config/autostart/
 sudo tee ~/.config/autostart/diodon.desktop > /dev/null <<EOF
 [Desktop Entry]
 Type=Application
