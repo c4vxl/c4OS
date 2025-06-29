@@ -71,7 +71,7 @@ for ARG in "$@"; do
       NO_TOUR=true
       ;;
     --fls=*)
-      FL_SCRIPTS+="\n${ARG#*=}"
+      FL_SCRIPTS+="${ARG#*=}"
       ;;
     --exec=*)
       if [ "$EXEC" == "" ]; then
@@ -366,7 +366,10 @@ function setup_gnome() {
     rm /usr/share/pixmaps/archlinux-logo-text-dark.svg /usr/share/pixmaps/archlinux-logo-text.svg /usr/share/pixmaps/archlinux-logo.svg
     "
 
-    execute_on_first_login "gsettings set org.gnome.desktop.input-sources sources \"[('xkb', '$KEYMAP')]\""
+    execute_on_first_login "$(cat <<EOF
+gsettings set org.gnome.desktop.input-sources sources \"[('xkb', '$KEYMAP')]\"
+EOF
+)"
 
     execute_on_first_login "
 dconf load / << EOF
@@ -465,7 +468,7 @@ sudo chmod 777 -R $INSTALLATION_RUNTIME/home/$USERNAME/.cache
 
 if [ "$FL_SCRIPTS" != "" ]; then
     echo $FL_SCRIPTS
-    execute_on_first_login $FL_SCRIPTS
+    execute_on_first_login "$FL_SCRIPTS"
 fi
 
 # Remove password if the initial password was set to ""
