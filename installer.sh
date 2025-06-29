@@ -364,6 +364,7 @@ function setup_gnome() {
     execute_as_root "
     convert -size 1x1 xc:transparent /usr/share/pixmaps/archlinux-logo.png
     rm /usr/share/pixmaps/archlinux-logo-text-dark.svg /usr/share/pixmaps/archlinux-logo-text.svg /usr/share/pixmaps/archlinux-logo.svg
+    gsettings set org.gnome.desktop.input-sources sources \"[(\\'xkb\\', \\'$KEYMAP\\')]\"
     "
 
     execute_on_first_login "
