@@ -1,0 +1,11 @@
+[org/gnome/desktop/interface]
+enable-hot-corners=false
+
+[org/gnome/shell]
+enable-hot-corners=false
+
+[org/gnome/mutter]
+workspaces-only-on-primary=false
+
+[org/gnome/shell/app-switcher]
+current-workspace-only=true

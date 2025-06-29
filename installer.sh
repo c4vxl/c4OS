@@ -371,6 +371,12 @@ dconf load / << EOF
 $(cat $SELF_DIR/configs/gnome/keybinds)
 EOF
     "
+
+    execute_on_first_login "
+dconf load / << EOF
+$(cat $SELF_DIR/configs/gnome/settings)
+EOF
+    "
 }
 
 function setup_desktop_env() {
