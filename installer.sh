@@ -366,6 +366,13 @@ function setup_gnome() {
     rm /usr/share/pixmaps/archlinux-logo-text-dark.svg /usr/share/pixmaps/archlinux-logo-text.svg /usr/share/pixmaps/archlinux-logo.svg
     "
 
+    execute_on_first_login "
+    dconf write /org/gnome/desktop/wm/keybindings/switch-applications \"['<Super>Tab']\"
+    dconf write /org/gnome/desktop/wm/keybindings/switch-applications-backward \"['<Shift><Super>Tab']\"
+    dconf write /org/gnome/desktop/wm/keybindings/switch-windows \"['<Alt>Tab']\"
+    dconf write /org/gnome/desktop/wm/keybindings/switch-windows-backward \"['<Shift><Alt>Tab']\"
+    "
+
     execute_on_first_login "$(cat <<EOF
 gsettings set org.gnome.desktop.input-sources sources \"[('xkb', '$KEYMAP')]\"
 EOF
